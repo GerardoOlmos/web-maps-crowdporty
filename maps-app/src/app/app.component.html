@@ -1,17 +1,14 @@
 <h1>Directions</h1>
 
-<button type="button" (click)="getDirection()">Get</button>
-
-<agm-map [latitude]="lat" [longitude]="lng">
-  <agm-direction *ngIf="dir" [origin]="dir.origin" [destination]="dir.destination"></agm-direction>
-</agm-map>
-
 <div class="container">
   <h1>Autocomplete</h1>
   <div class="form-group">
-    <input placeholder="search for location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control" #search [formControl]="searchControl">
+    <input placeholder="enter origin" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control" #searcho [formControl]="searchControl">
+    <input placeholder="enter destination" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control" #searchd [formControl]="searchControl">
   </div>
-  <agm-map [latitude]="latitude" [longitude]="longitude" [scrollwheel]="false" [zoom]="zoom">
-    <agm-marker [latitude]="latitude" [longitude]="longitude"></agm-marker>
+  <button type="button" (click)="getDirection()">Get</button>
+
+  <agm-map [latitude]="lat" [longitude]="lng">
+    <agm-direction *ngIf="dir" [origin]="dir.origin" [destination]="dir.destination"></agm-direction>
   </agm-map>
 </div>

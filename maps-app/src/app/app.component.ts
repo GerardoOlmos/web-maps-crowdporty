@@ -13,23 +13,32 @@ export class AppComponent implements OnInit {
 
   public latitude: number;
   public longitude: number;
+  public latitudeD: number;
+  public longitudeD: number;
   public searchControl: FormControl;
   public zoom: number;
 
-  lat: number = 24.799448;
-  lng: number = 120.979021;
+// Directions
+
+  // lat: number = 24.799448;
+  // lng: number = 120.979021;
 
   dir = undefined;
 
   getDirection() {
     this.dir = {
-      origin: { lat: 24.799448, lng: 120.979021 },
-      destination: { lat: 24.799524, lng: 120.975017 }
+      origin: { lat: this.latitude, lng: this.longitude },
+      destination: { lat: this.latitudeD, lng: this.longitudeD }
     }
   }
 
-  @ViewChild("search")
-  public searchElementRef: ElementRef;
+// End Directions
+
+  @ViewChild("searcho")
+  public searchElementRefO: ElementRef;
+
+  @ViewChild("searchd")
+  public searchElementRefD: ElementRef;
 
   constructor(
     private mapsAPILoader: MapsAPILoader,
@@ -46,11 +55,14 @@ export class AppComponent implements OnInit {
     this.searchControl = new FormControl();
 
     //set current position
-    this.setCurrentPosition();
+    // this.setCurrentPosition();
 
     //load Places Autocomplete
     this.mapsAPILoader.load().then(() => {
-      let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+      let autocomplete = new google.maps.places.Autocomplete(this.searchElementRefO.nativeElement, {
+        types: ["address"]
+      });
+      let autocompleteD = new google.maps.places.Autocomplete(this.searchElementRefD.nativeElement, {
         types: ["address"]
       });
       autocomplete.addListener("place_changed", () => {
@@ -69,16 +81,32 @@ export class AppComponent implements OnInit {
           this.zoom = 12;
         });
       });
+      autocompleteD.addListener("place_changed", () => {
+        this.ngZone.run(() => {
+          //get the place result
+          let place: google.maps.places.PlaceResult = autocompleteD.getPlace();
+
+          //verify result
+          if (place.geometry === undefined || place.geometry === null) {
+            return;
+          }
+
+          //set latitude, longitude and zoom
+          this.latitudeD = place.geometry.location.lat();
+          this.longitudeD = place.geometry.location.lng();
+          this.zoom = 12;
+        });
+      });
     });
   }
 
-  private setCurrentPosition() {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.latitude = position.coords.latitude;
-        this.longitude = position.coords.longitude;
-        this.zoom = 12;
-      });
-    }
-  }
+  // private setCurrentPosition() {
+  //   if ("geolocation" in navigator) {
+  //     navigator.geolocation.getCurrentPosition((position) => {
+  //       this.latitude = position.coords.latitude;
+  //       this.longitude = position.coords.longitude;
+  //       this.zoom = 12;
+  //     });
+  //   }
+  // }
 }
